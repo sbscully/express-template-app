@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+set -e
+
+export NODE_ENV=test
+export SECRET_KEY=secret
+export CLOUDINARY_URL=
+
+if env | grep -q ^DATABASE_URL=
+then
+  echo "DATABASE_URL already set"
+  export TEST_REPORTER=tap
+  export COVERAGE_REPORTER="--reporter text-summary"
+else
+  export DATABASE_URL=postgres://postgres@127.0.0.1:5432/open_data_store_test
+  export TEST_REPORTER=spec
+  export COVERAGE_REPORTER="--reporter html"
+fi
+echo "using database @ $DATABASE_URL"
+
+bin/database migrate:latest
+./node_modules/nyc/bin/nyc.js $COVERAGE_REPORTER -- \
+  ./node_modules/mocha/bin/mocha --recursive --reporter $TEST_REPORTER "$@"
+./node_modules/.bin/eslint . --quiet --fix

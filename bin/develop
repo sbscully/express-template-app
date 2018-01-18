@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+set -e
+
+bin/database pull
+gulp | jq -R -r '. as $line | try fromjson catch $line'

@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+set -e
+
+if [ $1 = 'pull' ]; then
+  source .env
+  DATABASE_NAME=${DATABASE_URL##*/}
+
+  dropdb --if-exists $DATABASE_NAME
+  heroku pg:pull DATABASE_URL $DATABASE_NAME
+else
+  node -r dotenv/config ./node_modules/.bin/knex --knexfile ./src/database/knexfile.js "$@"
+fi

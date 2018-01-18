@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+set -e
+
+node -r dotenv/config -r './src/app'
